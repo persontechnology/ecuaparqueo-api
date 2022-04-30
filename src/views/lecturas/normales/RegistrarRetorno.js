@@ -21,9 +21,10 @@ export default function RegistrarRetorno({route,navigation}) {
     const [kilometrajeAnterior, setkilometrajeAnterior] = useState('');
     const [lectura, setlectura] = useState();
     const [ordenMovilizacion, setordenMovilizacion] = useState('');
+    const [enviandoCancelar, setenviandoCancelar] = useState(false);
     
     const  acceder= async()=>{
-        // setcargando(true);
+        setcargando(true);
         try {
             const res=await fetch(API_URL+"lectura-normal-detalle",{
                 method:'POST',
@@ -48,21 +49,9 @@ export default function RegistrarRetorno({route,navigation}) {
             toast.show({'description':error.toString()})
         }finally {
             setcargando(false);
+            
         }
     }
-
-    useEffect(() => {
-        acceder();
-
-        // setcargando(true);
-        // setenviandoRegistro(false);
-        // setplacaNumero('');
-        // setfecha('');
-        // setkilometraje('');
-        // setcombustible('');
-        // setkilometrajeAnterior('');
-    }, [])
-
 
     const  registrar= async()=>{
       
@@ -86,7 +75,6 @@ export default function RegistrarRetorno({route,navigation}) {
             console.log(data)
             if(data.estado==='ok'){
                 toast.show({'description':data.mensaje.toString()});
-                
                 navigation.goBack();
                 
             }
@@ -110,6 +98,55 @@ export default function RegistrarRetorno({route,navigation}) {
         }
     }
 
+
+    const  cancelar= async()=>{
+      
+      setenviandoCancelar(true);
+      try {
+        
+          const res=await fetch(API_URL+"lectura-normal-cancelar-entrada",{
+              method:'POST',
+              headers:{
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${userToken}`
+              },
+              body:JSON.stringify({
+                  id
+              })
+          });
+          
+          const data=await res.json();
+          console.log(data)
+          if(data.estado==='ok'){
+              toast.show({'description':data.mensaje.toString()});
+              navigation.goBack();
+              
+          }
+
+          if(data.estado==='no'){
+              toast.show({'description':data.mensaje.toString()})
+          }
+
+          if(data.errors){
+              Object.entries(data.errors).forEach(([key, value]) => {
+                  toast.show({'description':value.toString()})
+              });
+          }
+          
+          
+      } catch (error) {
+        // console.log(error)
+          toast.show({'description':error.toString()})
+      }finally {
+        setenviandoCancelar(false);
+      }
+  }
+    
+
+    useEffect(() => {
+      acceder();
+  }, [])
     
   return cargando ? (
      <CargandoSpiner/>
@@ -157,7 +194,7 @@ export default function RegistrarRetorno({route,navigation}) {
             <Button mt="2" isLoading={enviandoRegistro}  isLoadingText="Procesando..." colorScheme={"info"} onPress={registrar}>
                     {enviandoRegistro?'Procesando':'Registrar'}
             </Button>
-          <Button mt="2" colorScheme="primary" onPress={()=>navigation.goBack()}>
+          <Button mt="2" isLoading={enviandoCancelar} isLoadingText="Cancelando" colorScheme="primary" onPress={cancelar}>
             Cancelar
           </Button>
         </VStack>
