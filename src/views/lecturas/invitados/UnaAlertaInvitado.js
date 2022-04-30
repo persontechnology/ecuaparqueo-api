@@ -51,14 +51,18 @@ export default function UnaAlertaInvitado({navigation}) {
                         return (
                             <Box alignItems="center" my={1} mx={1} key={'detalle-li-'+lectura.id}>
                                 <Pressable  onPress={() => {
-                                        navigation.navigate('RevisionLecturaInvitado', lectura);
+                                        if(lectura.tipo==='Entrada'){
+                                            navigation.navigate('RevisionLecturaInvitado', lectura)
+                                        }else{
+                                            navigation.navigate('RevisionLecturaSalidaInvitado', lectura)
+                                        }
                                         }}
                                     >
                                     {
                                         ({
                                             isPressed
                                         })=>{
-                                            return <Box maxW="100%" borderWidth="1" borderColor={lectura.tipo==='Entrada'?'info.400':'secondary.400'} shadow="5" bg={lectura.tipo==='Entrada'?'info.100':'secondary.100'} p="2" rounded="5"
+                                            return <Box maxW="100%" borderWidth="1" borderColor={lectura.tipo==='Entrada'?'info.400':'secondary.400'} shadow="5" bg={lectura.tipo==='Entrada'?'info.100':'secondary.100'} p="1" rounded="5"
                                                         style={{
                                                             transform: [{
                                                                 scale: isPressed ? 0.96 : 1
@@ -69,21 +73,21 @@ export default function UnaAlertaInvitado({navigation}) {
                                                         <Badge colorScheme={lectura.tipo==='Entrada'?'info':'secondary'} _text={{
                                                         color: "white"
                                                     }} variant="solid" rounded="4">
-                                                        Vehículo invitado
+                                                        Invitado
                                                         </Badge>
                                                         <Spacer />
                                                         <Text fontSize={10} color="coolGray.800">
                                                         {lectura.fecha}
                                                         </Text>
                                                     </HStack>
-                                                    <Text color="coolGray.800" mt="3" fontWeight="medium" fontSize="xl">
+                                                    <Text color="coolGray.800" fontWeight="medium" fontSize="xl">
                                                         {lectura.titulo}
                                                     </Text>
-                                                    <Text mt="2" fontSize="sm" color="coolGray.700">
+                                                    <Text fontSize="sm" color="coolGray.700">
                                                         {lectura.mensaje}
                                                     </Text>
                                                     <Flex>
-                                                        <Text mt="2" fontSize={12} fontWeight="medium" color={lectura.tipo==='Entrada'?'info.600':'secondary.600'}>
+                                                        <Text fontSize={12} fontWeight="medium" color={lectura.tipo==='Entrada'?'info.600':'secondary.600'}>
                                                         Precione para revisión
                                                         </Text>
                                                     </Flex>
@@ -91,7 +95,7 @@ export default function UnaAlertaInvitado({navigation}) {
                                         }
                                     }
                                 </Pressable>
-                                </Box>
+                            </Box>
                         )
                     })
                 }

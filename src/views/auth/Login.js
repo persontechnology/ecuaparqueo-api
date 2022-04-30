@@ -11,7 +11,7 @@ const Example = ({navigation}) => {
     
     const [verPassword, setverPassword] = React.useState(false);
     const [username, setUsername] = React.useState('david.criollo14@gmail.com');
-    const [password, setPassword] = React.useState('12345678');
+    const [password, setPassword] = React.useState('O5BucwJjEyzFifz');
     const [show, setShow] = React.useState(false);
     const toast = useToast();
     const [cargando, setcargando] = React.useState(false);

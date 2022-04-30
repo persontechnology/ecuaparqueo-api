@@ -1,4 +1,3 @@
-
 import React,{useState,useEffect,useContext} from 'react';
 import { Pressable, Text, Box, HStack, Spacer,Badge,Flex,View, Spinner,Heading } from "native-base";
 
@@ -6,14 +5,14 @@ import {API_URL} from '@env';
 import { AuthContext } from '../../../context/Auth';
 
 
-export default function UnaAlertaEspecial({navigation}) {
+export default function UnaAlertaNormal({navigation}) {
     const {userRolesPermisos,userToken}=useContext(AuthContext);
     const [lecturas, setlecturas] = useState([]);
     const [finalizarCarga, setfinalizarCarga] = useState(false);
     const [idLectura, setidLectura] = useState();
     const  acceder= async()=>{
         try {
-            const res=await fetch(API_URL+"notificacion-lectura-especial",{
+            const res=await fetch(API_URL+"notificacion-lectura-normal",{
                 method:'POST',
                 headers:{
                     'Accept': 'application/json',
@@ -34,12 +33,11 @@ export default function UnaAlertaEspecial({navigation}) {
     }    
 
 
-
-    const  cerrarNotificacion= async(id)=>{
+    const  finalizarLecturaSalida= async(id)=>{
         setidLectura(id);
         try {
             setlecturas(lecturas.filter(item=>item.id!==id))
-            const res=await fetch(API_URL+"notificacion-lectura-especial-finalizar",{
+            const res=await fetch(API_URL+"notificacion-lectura-normal-finalizar-salida",{
                 method:'POST',
                 headers:{
                     'Accept': 'application/json',
@@ -59,7 +57,7 @@ export default function UnaAlertaEspecial({navigation}) {
         }
     }
 
-
+    
     useEffect(()=>{
         
         acceder()
@@ -78,8 +76,14 @@ export default function UnaAlertaEspecial({navigation}) {
                 {
                     lecturas.map(function(lectura,i){
                         return (
-                            <Box alignItems="center" my={1} mx={1} key={'detalle-le-'+lectura.id}>
-                                <Pressable  onPress={() =>cerrarNotificacion(lectura.id)}
+                            <Box alignItems="center" my={1} mx={1} key={'detalle-ln-'+lectura.id}>
+                                <Pressable  onPress={() => {
+                                        if(lectura.tipo==='Entrada'){
+                                            navigation.navigate('RegistrarRetorno', lectura)
+                                        }else{
+                                            finalizarLecturaSalida(lectura.id);
+                                        }
+                                        }}
                                     >
                                     {
                                         ({
@@ -96,7 +100,7 @@ export default function UnaAlertaEspecial({navigation}) {
                                                         <Badge colorScheme={lectura.tipo==='Entrada'?'info':'secondary'} _text={{
                                                         color: "white"
                                                     }} variant="solid" rounded="4">
-                                                        Especial
+                                                        Normal
                                                         </Badge>
                                                         <Spacer />
                                                         <Text fontSize={10} color="coolGray.800">
@@ -106,7 +110,7 @@ export default function UnaAlertaEspecial({navigation}) {
                                                     <Text color="coolGray.800" fontWeight="medium" fontSize="xl">
                                                         {lectura.titulo}
                                                     </Text>
-                                                    <Text  fontSize="sm" color="coolGray.700">
+                                                    <Text fontSize="sm" color="coolGray.700">
                                                         {lectura.mensaje}
                                                     </Text>
                                                     <Flex>
@@ -130,3 +134,4 @@ export default function UnaAlertaEspecial({navigation}) {
     }
   
 }
+

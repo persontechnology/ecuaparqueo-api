@@ -1,8 +1,8 @@
 import React,{useState,useEffect} from 'react'
 import { Icon, Text, Box, HStack, Spacer, Flex, Badge,useToast, View,Center,Heading,VStack,FormControl,Input,Link,Button } from "native-base";
 import {API_URL} from '@env';
-import { AuthContext } from '../../context/Auth';
-import CargandoSpiner from '../CargandoSpiner';
+import { AuthContext } from '../../../context/Auth';
+import CargandoSpiner from '../../CargandoSpiner';
 import {Ionicons,MaterialCommunityIcons} from "@expo/vector-icons";
 
 
@@ -10,19 +10,22 @@ export default function RegistrarRetorno({route,navigation}) {
     
     const {userToken}=React.useContext(AuthContext);
     const toast=useToast();
-    const {notificacionLecturaId}=route.params;
-    const [cargando, setcargando] = useState(false);
+    const {id}=route.params;
+    
+    const [cargando, setcargando] = useState(true);
     const [enviandoRegistro, setenviandoRegistro] = useState(false);
     const [placaNumero, setplacaNumero] = useState('');
     const [fecha, setfecha] = useState('');
     const [kilometraje, setkilometraje] = useState('');
     const [combustible, setcombustible] = useState('');
     const [kilometrajeAnterior, setkilometrajeAnterior] = useState('');
+    const [lectura, setlectura] = useState();
+    const [ordenMovilizacion, setordenMovilizacion] = useState('');
     
     const  acceder= async()=>{
-        setcargando(true);
+        // setcargando(true);
         try {
-            const res=await fetch(API_URL+"notificacion-lectura-id",{
+            const res=await fetch(API_URL+"lectura-normal-detalle",{
                 method:'POST',
                 headers:{
                     'Accept': 'application/json',
@@ -30,13 +33,16 @@ export default function RegistrarRetorno({route,navigation}) {
                     'Authorization': `Bearer ${userToken}`
                 },
                 body:JSON.stringify({
-                    notificacionLecturaId
+                    id
                 })
             });
             const data=await res.json();
+            // console.log(data)
             setfecha(data.fecha);
             setplacaNumero(data.placaNumero)
             setkilometrajeAnterior(data.kilometraje_anterior);
+            setlectura(data);
+            setordenMovilizacion(data.ordenMovilizacion)
             
         } catch (error) {
             toast.show({'description':error.toString()})
@@ -48,13 +54,13 @@ export default function RegistrarRetorno({route,navigation}) {
     useEffect(() => {
         acceder();
 
-        setcargando(false);
-        setenviandoRegistro(false);
-        setplacaNumero('');
-        setfecha('');
-        setkilometraje('');
-        setcombustible('');
-        setkilometrajeAnterior('');
+        // setcargando(true);
+        // setenviandoRegistro(false);
+        // setplacaNumero('');
+        // setfecha('');
+        // setkilometraje('');
+        // setcombustible('');
+        // setkilometrajeAnterior('');
     }, [])
 
 
@@ -62,7 +68,7 @@ export default function RegistrarRetorno({route,navigation}) {
       
         setenviandoRegistro(true);
         try {
-            const res=await fetch(API_URL+"notificacion-lectura-registrar-retorno-vehiculo",{
+            const res=await fetch(API_URL+"lectura-normal-finalizar-entrada",{
                 method:'POST',
                 headers:{
                     'Accept': 'application/json',
@@ -70,9 +76,10 @@ export default function RegistrarRetorno({route,navigation}) {
                     'Authorization': `Bearer ${userToken}`
                 },
                 body:JSON.stringify({
-                    notificacionLecturaId,
+                    id,
                     kilometraje,
-                    combustible
+                    combustible,
+                    ordenMovilizacion
                 })
             });
             const data=await res.json();
@@ -81,6 +88,7 @@ export default function RegistrarRetorno({route,navigation}) {
                 toast.show({'description':data.mensaje.toString()});
                 
                 navigation.goBack();
+                
             }
 
             if(data.estado==='no'){
@@ -108,11 +116,20 @@ export default function RegistrarRetorno({route,navigation}) {
   ):(
 
       <Box maxW="96" mx={3} my={1} borderWidth="1" borderColor="coolGray.300" shadow="3" bg="coolGray.100" p="5" rounded="8">
+      <Badge>{"Lectura: "+lectura.estado}</Badge>
         <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
         color: "warmGray.50"
       }}>
-          Vehículo:{placaNumero}
+          {'N° movil: '+lectura.movil}
+          
         </Heading>
+        <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{
+        color: "warmGray.50"
+      }}>
+          
+          {'Placa: '+placaNumero}
+        </Heading>
+        
         <Heading mt="1" _dark={{
         color: "warmGray.200"
       }} color="coolGray.600" fontWeight="medium" size="xs">
@@ -120,15 +137,23 @@ export default function RegistrarRetorno({route,navigation}) {
         </Heading>
 
         <VStack space={3} mt="5">
-          <FormControl>
-            <FormControl.Label>{'Ingrese kilometraje mator a: '+kilometrajeAnterior} </FormControl.Label>
+          <FormControl isRequired>
+            <FormControl.Label>{'Ingrese kilometraje mayor a: '+kilometrajeAnterior} </FormControl.Label>
             <Input value={kilometraje.toString()} onChangeText={setkilometraje} keyboardType={"numeric"} InputLeftElement={<Icon as={<Ionicons name="speedometer" />} size={7} ml="2" color="muted.400" />} />
           </FormControl>
-          <FormControl>
+          <FormControl isRequired>
             <FormControl.Label>Ingrese % de combustible entre: 1 a 100</FormControl.Label>
             <Input value={combustible.toString()} onChangeText={setcombustible} keyboardType={"numeric"} InputLeftElement={<Icon as={<MaterialCommunityIcons name="speedometer" />} size={7} ml="2" color="muted.400" />} />
             
           </FormControl>
+
+          <FormControl>
+            <FormControl.Label>N° orden movilización opcional</FormControl.Label>
+            <Input value={ordenMovilizacion.toString()} onChangeText={setordenMovilizacion}  InputLeftElement={<Icon as={<MaterialCommunityIcons name="speedometer" />} size={7} ml="2" color="muted.400" />} />
+            
+          </FormControl>
+
+
             <Button mt="2" isLoading={enviandoRegistro}  isLoadingText="Procesando..." colorScheme={"info"} onPress={registrar}>
                     {enviandoRegistro?'Procesando':'Registrar'}
             </Button>

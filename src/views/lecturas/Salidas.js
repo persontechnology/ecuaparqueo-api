@@ -8,7 +8,7 @@ import { AuthContext } from '../../context/Auth';
 export default function Salidas() {
     
     const {userToken}=React.useContext(AuthContext);
-    const [placaMovil, setplacaMovil] = useState('13909293');
+    const [placaMovil, setplacaMovil] = useState('123456789');
     const [codigoBrazo, setcodigoBrazo] = useState('Bra-001');
     const [cargando, setcargando] = React.useState(false);
     const toast = useToast();

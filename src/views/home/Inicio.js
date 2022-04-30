@@ -4,6 +4,7 @@ import {StatusBar,SafeAreaView} from "react-native"
 import Bienvenida from "./Bienvenida";
 import UnaAlertaEspecial from "../lecturas/especiales/UnaAlertaEspecial";
 import UnaAlertaInvitado from "../lecturas/invitados/UnaAlertaInvitado";
+import UnaAlertaNormal from "../lecturas/normales/UnaAlertaNormal";
 
 
 
@@ -11,9 +12,9 @@ import UnaAlertaInvitado from "../lecturas/invitados/UnaAlertaInvitado";
 export default function Inicio({navigation}) {
     return (
       <ScrollView>
-          <UnaAlertaEspecial navigation={navigation}/>
+          <UnaAlertaNormal navigation={navigation}/>
           <UnaAlertaInvitado navigation={navigation}/>
-          {/* <Lista navigation={navigation}/> */}
+          <UnaAlertaEspecial navigation={navigation}/>
       </ScrollView>
       
     );

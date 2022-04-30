@@ -3,17 +3,14 @@ import { View,Text,useToast,HStack,Spinner,Heading,Center,Box,VStack,FormControl
 import {API_URL} from "@env";
 import { AuthContext } from '../../../context/Auth';
 
-export default function RevisionLecturaInvitado({ route, navigation }) {
+export default function RevisionLecturaSalidaInvitado({ route, navigation }) {
     const {id,tipo}=route.params;
     const [cargando, setcargando] = useState(true);
     const toast = useToast();
     const {userRolesPermisos,userToken}=useContext(AuthContext);
     const [lectura, setlectura] = useState();
-    let [service, setService] = useState("");
-    const [espacios, setespacios] = useState([]);
     const [placa, setplaca] = useState("SXA-2412");
-    const [motivo, setmotivo] = useState("NA");
-    const [espacio, setespacio] = useState("");
+   
    const [finalizarRevision, setfinalizarRevision] = useState(false);
    const [finalizarEliminar, setfinalizarEliminar] = useState(false);
 
@@ -35,9 +32,6 @@ export default function RevisionLecturaInvitado({ route, navigation }) {
             if(data.lectura){
               setlectura(data.lectura);
             }
-            if(data.espacios){
-              setespacios(data.espacios);
-            }
             
             if(data.errors){
                 Object.entries(data.errors).forEach(([key, value]) => {
@@ -55,7 +49,7 @@ export default function RevisionLecturaInvitado({ route, navigation }) {
     const  guardar= async()=>{
       setfinalizarRevision(true)
       try {
-          const res=await fetch(API_URL+"notificacion-lectura-invitado-finalizar-revision",{
+          const res=await fetch(API_URL+"notificacion-lectura-invitado-finalizar-revision-salida",{
               method:'POST',
               headers:{
                   'Accept': 'application/json',
@@ -64,9 +58,7 @@ export default function RevisionLecturaInvitado({ route, navigation }) {
               },
               body:JSON.stringify({
                   id:lectura.id,
-                  placa,
-                  motivo,
-                  espacio
+                  placa
               })
           });
           const data=await res.json();
@@ -89,6 +81,7 @@ export default function RevisionLecturaInvitado({ route, navigation }) {
           setfinalizarRevision(false);
       }
   }
+
 
   const  eliminar= async()=>{
     setfinalizarEliminar(true)
@@ -125,6 +118,7 @@ export default function RevisionLecturaInvitado({ route, navigation }) {
     }
   }
 
+
     useEffect(()=>{
         acceder();
         setfinalizarRevision(false);
@@ -158,27 +152,6 @@ export default function RevisionLecturaInvitado({ route, navigation }) {
             <FormControl isRequired>
               <FormControl.Label>Placa:</FormControl.Label>
               <Input value={placa} onChangeText={setplaca} />
-            </FormControl>
-            <FormControl isRequired>
-              <FormControl.Label>Motivo:</FormControl.Label>
-              <Input value={motivo} onChangeText={setmotivo}  />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label>Selecione espacio</FormControl.Label>
-              <Select selectedValue={espacio} accessibilityLabel="Selecione un espacio" placeholder="Selecione un espacio" 
-                _selectedItem={{
-                    bg: "teal.600",
-                    endIcon: <CheckIcon size="5" key={"exc01icon"} />
-                }} mt={1} onValueChange={itemValue => setespacio(itemValue)}>
-                    <Select.Item key={'espacio-0'} label={"Sin espacio"} _selectedItem value={""} />
-                    {
-                      espacios.map((espacio)=>{
-                        return (
-                          <Select.Item key={'espacio-'+espacio.id} label={espacio.numero+" - "+espacio.estado} value={espacio.id} />
-                        )
-                      })
-                    }
-                </Select>
             </FormControl>
             <Button  colorScheme="info" isLoadingText={"Finalizando revisión"} isLoading={finalizarRevision} onPress={()=>guardar()}>
               Guardar
