@@ -41,7 +41,7 @@ export default function MyTabs() {
           }}
         />
 
-        <Tab.Screen 
+        {/* <Tab.Screen 
           name="ConfiguracionTab" 
           component={ConfiguracionStackScreen}
           options={{
@@ -50,18 +50,24 @@ export default function MyTabs() {
             <MaterialIcons name="settings" color={color} size={size} />
           ),
         }}
-         />
+         /> */}
 
-        <Tab.Screen 
-          name="CombustibleTab" 
-          component={CombustibleStackScreen} 
-          options={{
-          tabBarLabel: 'Combustible',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="fuel" color={color} size={size} />
-          ),
-        }}
-        />
+        {
+          userRolesPermisos.includes('Despachador')?
+          (
+            <Tab.Screen 
+              name="CombustibleTab" 
+              component={CombustibleStackScreen} 
+              options={{
+              tabBarLabel: 'Combustible',
+              tabBarIcon: ({ color, size }) => (
+                <MaterialCommunityIcons name="fuel" color={color} size={size} />
+              ),
+            }}
+            />
+          ):<></>
+        }
+        
 
       
 

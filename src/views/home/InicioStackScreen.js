@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useContext} from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Inicio from './Inicio';
 import {API_NAME} from "@env";
@@ -6,10 +6,14 @@ import {API_NAME} from "@env";
 import RevisionLecturaInvitado from '../lecturas/invitados/RevisionLecturaInvitado';
 import RevisionLecturaSalidaInvitado from '../lecturas/invitados/RevisionLecturaSalidaInvitado';
 import RegistrarRetorno from '../lecturas/normales/RegistrarRetorno';
+import {AuthContext} from '../../context/Auth';
 
 const HomeStack = createNativeStackNavigator();
 
 export default function InicioStackScreen() {
+
+  const {userRolesPermisos,userToken}=useContext(AuthContext);
+
   return (
     <HomeStack.Navigator initialRouteName='InicioHome'>
       <HomeStack.Screen name="InicioHome" options={{ title:API_NAME }} component={Inicio} />
